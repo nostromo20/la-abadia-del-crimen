@@ -1,0 +1,14 @@
+# SuperBASIC and shell scripts must keep LF line endings
+*.sh text eol=lf
+*_bas text eol=lf
+*.s text eol=lf
+*.py text eol=lf
+*.c text eol=lf
+*.cpp text eol=lf
+*.h text eol=lf
+*.md text eol=lf
+*.BIN binary
+*.bin binary
+*.dsk binary
+*.OVL binary
+*_scr binary

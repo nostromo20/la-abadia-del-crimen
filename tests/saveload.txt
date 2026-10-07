@@ -1,0 +1,7 @@
+# saveload: walk, save (F1) at 300, walk on, load (F2) at 600, walk again
+5 5 LEFT
+6 160 UP
+300 300 F1
+310 500 UP
+600 600 F2
+610 800 UP

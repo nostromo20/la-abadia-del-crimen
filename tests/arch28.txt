@@ -1,0 +1,5 @@
+# arch28: (tools/mixcheck.py) from tests/arch28_sav: Guillermo in the arched doorway of screen 0x28,
+# next to its pillar (material 0x44: FlipX, two CallPreserves, FlipX again), then walks through it
+5 5 F2
+12 12 LEFT
+13 40 UP

@@ -1,0 +1,20 @@
+{
+ "name": "open_door",
+ "source": "open_door.json",
+ "tick_hz": 22917,
+ "beeper_range_hz": [43.3, 1081.0],
+ "beeps": [
+  {
+   "t_ms": 0.0,
+   "frame": 0,
+   "params": [148, 115, 279, 9169, -1, 0, 0, 0],
+   "octave_shift": 2,
+   "dos_hz": [18.21, 22.96],
+   "target_hz": [72.84, 91.84],
+   "ql_hz": [72.71, 91.96],
+   "fit": "sweep 148 -> 115 (33 steps every 279 ticks = 12.2 ms)",
+   "ipc_bytes": [148, 115, 23, 1, 209, 35, 240, 0]
+  }
+ ],
+ "octave_shift": 2
+}

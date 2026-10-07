@@ -1,0 +1,26 @@
+{
+ "name": "jingle",
+ "source": "CPC engine 0x1011 (VIGASOCO JINGLE) via cpp/port/ql_sound.c",
+ "event": "tercia/completas (CPC 5F8F, 5FB5, 5FC7; the CPC comment calls it 'campanas')",
+ "tick_hz": 22917,
+ "beeper_range_hz": [43.3, 1081.0],
+ "cpc_length_ms": 980.0,
+ "ql_length_ms": 980.0,
+ "fit": "dyad 1995 + 2930 Hz folded to p2/p6 (988/735 Hz), continuous bounce, one up-down cycle per CPC re-strike (5.4 frames)",
+ "min_frames_between_beeps": null,
+ "verification": "first 150 frames identical to the CPC oracle (build/snd/host_ay.txt)",
+ "beeps": [
+  {
+   "t_ms": 0.0,
+   "frame": 0,
+   "params": [2, 6, 309, 22459, 1, 15, 0, 0],
+   "ipc_bytes": [2, 6, 53, 1, 187, 87, 31, 0],
+   "dur_ms": 980.0,
+   "cpc_hz": [1994.7, 2929.7],
+   "octave_shift": [-1, -2],
+   "target_hz": [997.4, 732.4],
+   "ql_hz": [987.8, 734.5],
+   "tremolo_frames": 5.4
+  }
+ ]
+}

@@ -1,0 +1,3 @@
+# whole intro, then space at the end and play
+3400 3402 SPACE
+3420 3700 UP

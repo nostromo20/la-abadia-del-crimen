@@ -1,0 +1,14 @@
+# walk1: Guillermo walks around the entrance, turns, waits for the abbot
+10 60 UP
+61 62 LEFT
+63 120 UP
+121 122 RIGHT
+123 200 UP
+300 305 RIGHT
+306 380 UP
+381 383 LEFT
+384 460 UP
+500 520 DOWN
+600 700 UP
+701 702 LEFT
+703 790 UP

@@ -1,0 +1,2 @@
+# speed: stand 30 steps, walk 60 steps (UP held), stand
+40 100 UP

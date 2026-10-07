@@ -1,0 +1,49 @@
+{
+ "name": "speech",
+ "script": "DS:C19E",
+ "file_offset": "0x1419E",
+ "trigger": "0x53a2 (phrase put on the scroll) and 0x2cc5 (20x with a delay when the demo's key buffer runs out)",
+ "event": "phrase blip / end-of-demo beeps",
+ "cpc_equivalent": "CPC 0x1020 'canal 3' (CPC 3B73 per phrase character, 320B demo end x20)",
+ "mapping_confidence": "high",
+ "tick_hz": 299.9452,
+ "tick_ms": 3.33394,
+ "pit_hz": 1193182,
+ "loops": false,
+ "pass_ms": 200.0,
+ "pass_ticks": 60,
+ "notes": [
+  {
+   "t_ms": 0.0,
+   "dur_ms": 200.037,
+   "tick": 0,
+   "ticks": 60,
+   "divisor": 1810,
+   "hz": 659.22,
+   "envelope": {
+    "every_ticks": 4,
+    "table": "DS:C452",
+    "divisor_deltas": [9, -9, -9, 9, "loop"]
+   }
+  }
+ ],
+ "segments": [
+  [0.0, 13.336, 0, 4, true, 1810, 659.22],
+  [13.336, 13.336, 4, 4, true, 1819, 655.95],
+  [26.672, 13.336, 8, 4, true, 1810, 659.22],
+  [40.007, 13.336, 12, 4, true, 1801, 662.51],
+  [53.343, 13.336, 16, 4, true, 1810, 659.22],
+  [66.679, 13.336, 20, 4, true, 1819, 655.95],
+  [80.015, 13.336, 24, 4, true, 1810, 659.22],
+  [93.35, 13.336, 28, 4, true, 1801, 662.51],
+  [106.686, 13.336, 32, 4, true, 1810, 659.22],
+  [120.022, 13.336, 36, 4, true, 1819, 655.95],
+  [133.358, 13.336, 40, 4, true, 1810, 659.22],
+  [146.693, 13.336, 44, 4, true, 1801, 662.51],
+  [160.029, 13.336, 48, 4, true, 1810, 659.22],
+  [173.365, 13.336, 52, 4, true, 1819, 655.95],
+  [186.701, 13.336, 56, 4, true, 1810, 659.22]
+ ],
+ "verification": "per-tick (gate, divisor) trace from Unicorn running the x86 engine == static decoder; OUT counts {'42h': 30, '43h': 1, '61h': 1}",
+ "segment_fields": ["t_ms", "dur_ms", "tick", "ticks", "on", "divisor", "hz"]
+}

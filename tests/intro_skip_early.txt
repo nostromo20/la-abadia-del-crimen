@@ -1,0 +1,3 @@
+# space while the first page is being written
+50 51 SPACE
+80 300 UP

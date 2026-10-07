@@ -1,0 +1,3 @@
+# stress: (tools/scrbytes.py, cyclest) from tests/stress_sav: the four monks of day 1 placed next to
+# Guillermo (tests/arch28_sav.txt), then no key: as many characters on the screen as the game has
+5 5 F2

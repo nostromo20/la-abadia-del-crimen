@@ -1,0 +1,20 @@
+{
+ "name": "steps",
+ "source": "steps.json",
+ "tick_hz": 22917,
+ "beeper_range_hz": [43.3, 1081.0],
+ "beeps": [
+  {
+   "t_ms": 0.0,
+   "frame": 0,
+   "params": [224, 0, 0, 917, 0, 0, 0, 0],
+   "octave_shift": 0,
+   "dos_hz": [49.0, 49.0],
+   "target_hz": [49.0, 49.0],
+   "ql_hz": [49.05, 49.05],
+   "fit": "single pitch",
+   "ipc_bytes": [224, 0, 0, 0, 149, 3, 0, 0]
+  }
+ ],
+ "octave_shift": 0
+}

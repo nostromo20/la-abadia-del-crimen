@@ -1,0 +1,4 @@
+# freeze repro: skip early, idle, then walk
+40 41 SPACE
+300 302 LEFT
+303 600 UP

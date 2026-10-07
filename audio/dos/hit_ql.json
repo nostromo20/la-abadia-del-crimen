@@ -1,0 +1,53 @@
+{
+ "name": "hit",
+ "source": "CPC engine 0x102A (VIGASOCO HIT) via cpp/port/ql_sound.c",
+ "event": "Severino knocking at his cell door (CPC 635A)",
+ "tick_hz": 22917,
+ "beeper_range_hz": [43.3, 1081.0],
+ "cpc_length_ms": 1420.0,
+ "ql_length_ms": 1320.0,
+ "fit": "3 strikes, one BEEP each, fuzz 13 for the AY noise",
+ "min_frames_between_beeps": 23,
+ "verification": "first 150 frames identical to the CPC oracle (build/snd/host_ay.txt)",
+ "beeps": [
+  {
+   "t_ms": 0.0,
+   "frame": 0,
+   "params": [146, 0, 0, 9167, 0, 0, 0, 13],
+   "ipc_bytes": [146, 0, 0, 0, 207, 35, 0, 13],
+   "dur_ms": 400.0,
+   "cpc_hz": 73.4,
+   "octave_shift": 0,
+   "target_hz": 73.4,
+   "ql_hz": 73.6,
+   "cents_err": 5.3,
+   "cpc_strike_frames": [0, 23]
+  },
+  {
+   "t_ms": 460.0,
+   "frame": 23,
+   "params": [146, 0, 0, 9167, 0, 0, 0, 13],
+   "ipc_bytes": [146, 0, 0, 0, 207, 35, 0, 13],
+   "dur_ms": 400.0,
+   "cpc_hz": 73.4,
+   "octave_shift": 0,
+   "target_hz": 73.4,
+   "ql_hz": 73.6,
+   "cents_err": 5.3,
+   "cpc_strike_frames": [23, 46]
+  },
+  {
+   "t_ms": 920.0,
+   "frame": 46,
+   "params": [166, 0, 0, 9167, 0, 0, 0, 13],
+   "ipc_bytes": [166, 0, 0, 0, 207, 35, 0, 13],
+   "dur_ms": 400.0,
+   "cpc_hz": 65.4,
+   "octave_shift": 0,
+   "target_hz": 65.4,
+   "ql_hz": 65.3,
+   "cents_err": -4.5,
+   "cpc_strike_frames": [46, 71]
+  }
+ ]
+}

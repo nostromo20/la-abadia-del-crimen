@@ -1,0 +1,9 @@
+# build outputs (build_hybrid.sh, build_release.sh, the tests)
+/build/
+/abadia_h_bin
+/boot_h_bas
+/abadia_scr
+/release/*
+!/release/README.md
+__pycache__/
+*.pyc

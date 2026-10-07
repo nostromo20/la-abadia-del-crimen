@@ -1,0 +1,24 @@
+{
+ "name": "mirror",
+ "source": "CPC engine 0x0FFD (VIGASOCO MIRROR) via cpp/port/ql_sound.c",
+ "event": "the mirror opens (CPC 3361)",
+ "tick_hz": 22917,
+ "beeper_range_hz": [43.3, 1081.0],
+ "cpc_length_ms": 1580.0,
+ "ql_length_ms": 1380.0,
+ "fit": "sweep p159 -> p128 (67.8 -> 83.6 Hz, step every 833 ticks), fuzz 12 for the noise channel",
+ "min_frames_between_beeps": null,
+ "verification": "first 150 frames identical to the CPC oracle (build/snd/host_ay.txt)",
+ "beeps": [
+  {
+   "t_ms": 200.0,
+   "frame": 10,
+   "params": [159, 128, 833, 27042, -1, 0, 0, 12],
+   "ipc_bytes": [159, 128, 65, 3, 162, 105, 240, 12],
+   "dur_ms": 1180.0,
+   "cpc_hz": [67.8, 83.6],
+   "octave_shift": 0,
+   "ql_hz": [68.0, 83.3]
+  }
+ ]
+}

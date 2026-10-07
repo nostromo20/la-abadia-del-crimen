@@ -1,0 +1,4 @@
+# skip during the first page turn, idle, walk
+481 481 SPACE
+600 602 LEFT
+603 900 UP

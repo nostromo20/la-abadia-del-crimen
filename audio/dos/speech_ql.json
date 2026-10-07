@@ -1,0 +1,20 @@
+{
+ "name": "speech",
+ "source": "speech.json",
+ "tick_hz": 22917,
+ "beeper_range_hz": [43.3, 1081.0],
+ "beeps": [
+  {
+   "t_ms": 0.0,
+   "frame": 0,
+   "params": [8, 0, 0, 4584, 0, 0, 0, 0],
+   "octave_shift": 0,
+   "dos_hz": [655.95, 662.51],
+   "target_hz": [659.22, 659.22],
+   "ql_hz": [651.05, 651.05],
+   "fit": "single pitch (DOS vibrato +-9 divisor dropped: 9 cents, below the beeper's step)",
+   "ipc_bytes": [8, 0, 0, 0, 232, 17, 0, 0]
+  }
+ ],
+ "octave_shift": 0
+}

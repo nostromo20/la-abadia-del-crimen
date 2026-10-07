@@ -1,0 +1,4 @@
+# enter: turn to -y and walk to the abbot, then follow him
+5 5 LEFT
+6 160 UP
+400 900 UP

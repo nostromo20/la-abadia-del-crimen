@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Abadia QL colour mapper</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; margin: 0; padding: 16px;
+         background: #1a1a1a; color: #ddd; }
+  h1 { margin: 0 0 8px; font-size: 18px; color: #fff; }
+  h2 { margin: 14px 0 8px; font-size: 13px; color: #aaa; font-weight: normal; text-transform: uppercase; letter-spacing: 1px; }
+  .banner { background: #4a3a10; border: 1px solid #a8862a; color: #ffe9a8; padding: 8px 10px; border-radius: 4px;
+            margin-bottom: 12px; font-size: 12px; line-height: 1.5; }
+  .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; background: #252525; padding: 10px;
+              border-radius: 4px; margin-bottom: 12px; }
+  .controls label { font-size: 12px; color: #aaa; }
+  select, button, input { background: #1a1a1a; color: #ddd; border: 1px solid #555; padding: 4px 8px;
+                          font-family: inherit; font-size: 12px; border-radius: 3px; }
+  button { cursor: pointer; }
+  button:hover { background: #2a2a2a; border-color: #777; }
+  button.primary { background: #2a4a6a; border-color: #4a7aaa; }
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid #444; margin-bottom: 10px; }
+  .tab { padding: 6px 14px; background: #2a2a2a; color: #aaa; cursor: pointer; border: 1px solid #444;
+         border-bottom: none; border-radius: 4px 4px 0 0; font-size: 12px; }
+  .tab.active { background: #3a3a3a; color: #fff; border-color: #666; }
+  .layout { display: grid; grid-template-columns: minmax(420px, 560px) 1fr; gap: 16px; }
+  @media (max-width: 1250px) { .layout { grid-template-columns: 1fr; } }
+  .panel { background: #252525; padding: 12px; border-radius: 4px; }
+  table.map { border-collapse: collapse; width: 100%; font-size: 12px; }
+  table.map th, table.map td { border: 1px solid #3a3a3a; padding: 5px; text-align: center; }
+  table.map th { color: #aaa; font-weight: normal; background: #2a2a2a; }
+  table.map td.cls { text-align: left; color: #ccc; white-space: nowrap; }
+  .cell { display: flex; flex-direction: column; gap: 3px; align-items: center; }
+  .cell select { width: 100%; }
+  .sw { display: inline-block; width: 26px; height: 18px; border: 1px solid #666; border-radius: 2px; vertical-align: middle; }
+  .cpcsw { width: 18px; height: 14px; display: inline-block; border: 1px solid #666; vertical-align: middle; }
+  .muted { color: #888; font-size: 11px; line-height: 1.5; }
+  .warn { color: #ffb070; font-size: 11px; }
+  canvas { image-rendering: pixelated; image-rendering: crisp-edges; background: #000; border: 1px solid #444; display: block; }
+  .previews { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-start; }
+  .cap { font-size: 11px; color: #888; margin-top: 4px; max-width: 512px; }
+  .legend span { display: inline-block; margin-right: 10px; font-size: 11px; }
+  #status { font-size: 11px; color: #8c8; min-height: 14px; }
+  pre { white-space: pre-wrap; font-size: 11px; color: #aaa; }
+</style>
+</head>
+<body>
+<h1>Abadia QL colour mapper</h1>
+<div class="banner">
+  <b>What the game shows:</b> the <b>terrain</b>, <b>characters</b> (every sprite the mixer draws: monks, Guillermo,
+  Adso, objects, doors) and <b>panel</b> rows of the day and night palettes, with <b>dithers</b> anywhere.
+  Not shown: the <b>lamp</b> row (the lamp's dark pixels use the terrain pen 3), and the characters / panel rows of
+  palettes 0 and 1 (no sprites or panel are drawn under them). The "Game" view below shows exactly what the build draws
+  (the same rules as tools/colourmodel.py, which the colour checks use).
+</div>
+
+<div class="controls">
+  <label>Preset</label>
+  <select id="preset"></select>
+  <button id="applyPreset">Apply to this palette</button>
+  <button id="copyChar">Copy terrain &rarr; characters</button>
+  <button id="copyAll">Copy terrain &rarr; all classes</button>
+  <span style="flex:1"></span>
+  <button id="export" class="primary">Export JSON</button>
+  <label class="muted" style="cursor:pointer"><input type="file" id="import" accept=".json" style="display:none">
+    <span style="border:1px solid #555;padding:4px 8px;border-radius:3px">Import JSON</span></label>
+  <button id="save" title="Only when opened through tools/colour_server.py">Save to repo</button>
+</div>
+<div id="status"></div>
+
+<div class="layout">
+  <div class="panel">
+    <div class="tabs" id="paltabs"></div>
+    <div id="palinfo" class="muted"></div>
+    <h2>Pen &rarr; QL colour</h2>
+    <table class="map" id="maptable"></table>
+    <div class="muted" style="margin-top:6px">
+      Second box = optional 2&times;2 checker dither partner (&mdash; = none). <span id="dithercost"></span>
+    </div>
+    <h2>Notes</h2>
+    <div class="muted" id="notes"></div>
+  </div>
+
+  <div class="panel">
+    <div class="controls" style="margin-bottom:8px">
+      <label>Scene</label><select id="scene"></select>
+      <label>Palette</label><select id="previewPal"></select>
+      <label><input type="checkbox" id="gameToday"> Game</label>
+      <label><input type="checkbox" id="overlay"> Show sources</label>
+      <label><input type="checkbox" id="showCpc" checked> CPC original</label>
+    </div>
+    <div class="previews">
+      <div><canvas id="ql" width="256" height="256" style="width:512px;height:512px"></canvas>
+        <div class="cap" id="qlcap"></div></div>
+      <div id="cpcbox"><canvas id="cpc" width="256" height="256" style="width:512px;height:512px"></canvas>
+        <div class="cap">CPC original colours (hardware inks of the game's palette), same framing.</div></div>
+    </div>
+    <div class="legend muted" id="legend"></div>
+    <div class="cap" id="scenesrc"></div>
+  </div>
+</div>
+
+<h2>How to use</h2>
+<pre>
+1. Pick a palette tab (day, night, parchment, black) and set each pen's QL colour for each pixel source.
+   Terrain = tiles and room fills, Characters = monks / Guillermo / Adso / objects / doors drawn by the sprite mixer,
+   Panel = the HUD under the play area, Lamp = the dark pixels of Adso's lamp in the dark library.
+2. Watch the preview (layout A: play area from line 28, panel from line 188). "Show sources" tints each source.
+3. Export JSON and save it as data/colour_mapping.json in the repo (or "Save to repo" when the page was opened with
+   python tools/colour_server.py). build_hybrid.sh runs tools/mkpalette.py, which turns it into src/palette_data.s.
+</pre>
+
+<script src="colour_scenes.js"></script>
+<script src="colour_mapping_build.js"></script>
+<script>
+"use strict";
+const QL = { black: [0,0,0], blue: [0,0,255], red: [255,0,0], magenta: [255,0,255],
+             green: [0,255,0], cyan: [0,255,255], yellow: [255,255,0], white: [255,255,255] };
+const NAMES = Object.keys(QL);
+const CLASSES = ["terrain", "characters", "panel", "lamp"];          // order in the table
+const CLASS_INDEX = { terrain: 0, characters: 1, lamp: 2, panel: 3 };  // the scene data's class numbers
+const SC = COLOUR_SCENES;
+const PALS = SC.palettes;
+const LAY = SC.layout;
+
+function hwRgb(ink) { return SC.cpc_hw_rgb[ink]; }
+function nearest(rgb) {
+  let best = null, bd = 1e9;
+  for (const n of NAMES) { const c = QL[n]; const d = (c[0]-rgb[0])**2 + (c[1]-rgb[1])**2 + (c[2]-rgb[2])**2;
+    if (d < bd) { bd = d; best = n; } }
+  return best;
+}
+// presets: one pen list (a pair = dither) per palette they belong to
+const PRESETS = {
+  "Current build":      null,                                      // filled from the palettes' ql_now
+  "D1 (current day)":   { pal: 2, pens: ["cyan", "yellow", "red", "black"] },
+  "D2 hue":             { pal: 2, pens: ["cyan", "red", "yellow", "black"] },
+  "D3 nearest":         { pal: 2, pens: PALS[2].cpc_inks.map(i => nearest(hwRgb(i))) },
+  "D4 dither orange":   { pal: 2, pens: ["cyan", ["red", "yellow"], "yellow", "black"] },
+  "N1 hue (night now)": { pal: 3, pens: ["blue", "magenta", "white", "black"] },
+  "N3 dark blue":       { pal: 3, pens: ["black", "blue", "white", "black"] },
+};
+
+let mapping = {};      // mapping[pal][class] = [c0..c3], c = name or [a, b]
+function currentBuild() {
+  // the build's mapping (tools/colour_mapping_build.js, written by tools/mkpalette.py)
+  const b = (typeof COLOUR_MAPPING_BUILD !== "undefined") ? COLOUR_MAPPING_BUILD : null;
+  const m = {};
+  for (const p of PALS) {
+    m[p.id] = {};
+    const e = b && b[String(p.id)];
+    for (const c of CLASSES) m[p.id][c] = JSON.parse(JSON.stringify(e ? (e[c] || e.terrain) : p.ql_now));
+  }
+  return m;
+}
+mapping = currentBuild();
+let curPal = 2;
+
+function el(id) { return document.getElementById(id); }
+function status(msg, bad) { const s = el("status"); s.textContent = msg; s.style.color = bad ? "#f88" : "#8c8"; }
+
+// ---------------- scenes ----------------
+const scenes = [];     // {meta, px: Uint8Array(256*200) of pen|class<<2}
+async function inflate(b64) {
+  const bin = Uint8Array.from(atob(b64), ch => ch.charCodeAt(0));
+  const stream = new Blob([bin]).stream().pipeThrough(new DecompressionStream("deflate"));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+async function loadScenes() {
+  for (const s of SC.scenes) {
+    const packed = await inflate(s.z);
+    const px = new Uint8Array(s.w * s.h);
+    for (let i = 0; i < packed.length; i++) { px[2*i] = packed[i] >> 4; px[2*i+1] = packed[i] & 15; }
+    scenes.push({ meta: s, px });
+  }
+}
+
+// ---------------- UI ----------------
+function buildTabs() {
+  const t = el("paltabs"); t.innerHTML = "";
+  for (const p of PALS) {
+    const d = document.createElement("div");
+    d.className = "tab" + (p.id === curPal ? " active" : "");
+    d.textContent = p.id + " " + p.name;
+    d.onclick = () => { curPal = p.id; buildTabs(); buildTable(); render(); };
+    t.appendChild(d);
+  }
+  const p = PALS[curPal];
+  el("palinfo").innerHTML = "CPC hardware inks " + p.cpc_inks.join(", ") + " &nbsp; " +
+    p.cpc_inks.map(i => '<span class="cpcsw" style="background:rgb(' + hwRgb(i).join(",") + ')"></span>').join(" ") +
+    "<br>Used: " + p.used;
+}
+function colourSelect(value, allowNone) {
+  const s = document.createElement("select");
+  if (allowNone) { const o = document.createElement("option"); o.value = ""; o.textContent = "—"; s.appendChild(o); }
+  for (const n of NAMES) { const o = document.createElement("option"); o.value = n; o.textContent = n; s.appendChild(o); }
+  s.value = value || "";
+  return s;
+}
+function swatchStyle(c) {
+  if (Array.isArray(c)) {
+    const a = "rgb(" + QL[c[0]].join(",") + ")", b = "rgb(" + QL[c[1]].join(",") + ")";
+    return "background: repeating-conic-gradient(" + a + " 0% 25%, " + b + " 0% 50%) 50% / 6px 6px";
+  }
+  return "background: rgb(" + QL[c].join(",") + ")";
+}
+function buildTable() {
+  const t = el("maptable"); t.innerHTML = "";
+  const p = PALS[curPal];
+  let h = "<tr><th>source</th>";
+  for (let pen = 0; pen < 4; pen++)
+    h += '<th>pen ' + pen + ' <span class="cpcsw" style="background:rgb(' + hwRgb(p.cpc_inks[pen]).join(",") + ')" title="CPC original"></span></th>';
+  t.insertAdjacentHTML("beforeend", h + "</tr>");
+  for (const cls of CLASSES) {
+    const tr = document.createElement("tr");
+    const td0 = document.createElement("td"); td0.className = "cls";
+    const shown = cls === "terrain" || ((cls === "characters" || cls === "panel") && curPal >= 2) ||
+                  (cls === "lamp" && false);
+    td0.textContent = cls + (shown ? "" : (cls === "lamp" ? " (pen 3 only, as terrain)" : " (unused here)"));
+    tr.appendChild(td0);
+    for (let pen = 0; pen < 4; pen++) {
+      const v = mapping[curPal][cls][pen];
+      const td = document.createElement("td");
+      const box = document.createElement("div"); box.className = "cell";
+      const sw = document.createElement("span"); sw.className = "sw"; sw.style.cssText = swatchStyle(v);
+      const s1 = colourSelect(Array.isArray(v) ? v[0] : v, false);
+      const s2 = colourSelect(Array.isArray(v) ? v[1] : "", true);
+      const upd = () => {
+        mapping[curPal][cls][pen] = s2.value && s2.value !== s1.value ? [s1.value, s2.value] : s1.value;
+        sw.style.cssText = swatchStyle(mapping[curPal][cls][pen]);
+        notes(); render();
+      };
+      s1.onchange = upd; s2.onchange = upd;
+      box.append(sw, s1, s2); td.appendChild(box); tr.appendChild(td);
+    }
+    t.appendChild(tr);
+  }
+  notes();
+}
+function notes() {
+  const out = [], info = [];
+  for (const p of PALS) {
+    const m = mapping[p.id];
+    const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+    if (p.id <= 1) {
+      for (const cls of ["characters", "panel"]) if (!same(m[cls], m.terrain))
+        out.push("palette " + p.id + " " + p.name + ": the " + cls + " row is not used (no sprites or panel are drawn under this palette).");
+    } else if (!same(m.characters, m.terrain)) {
+      info.push("palette " + p.id + " " + p.name + ": separate character colours (the game keeps a sprite mask: about +2 ms a walking step, +7-8 ms in rooms full of monks).");
+    }
+    if (!same(m.lamp[3], m.terrain[3]))
+      out.push("palette " + p.id + " " + p.name + ": lamp pen 3 differs from terrain pen 3: not shown (the lamp's dark pixels use the terrain pen 3).");
+  }
+  el("notes").innerHTML = info.map(x => "<div>" + x + "</div>").join("") +
+    (out.length ? out.map(x => '<div class="warn">' + x + "</div>").join("") : "<div>The game shows everything else exactly as previewed.</div>");
+  el("dithercost").innerHTML = "Dithers are drawn everywhere (tiles, sprites, panel, fills) at no extra memory and almost no time.";
+}
+function buildPresets() {
+  const s = el("preset"); s.innerHTML = "";
+  for (const k of Object.keys(PRESETS)) { const o = document.createElement("option"); o.value = k;
+    const pr = PRESETS[k]; o.textContent = k + (pr ? " (palette " + pr.pal + ")" : " (all palettes)"); s.appendChild(o); }
+}
+function applyPreset() {
+  const k = el("preset").value, pr = PRESETS[k];
+  if (!pr) { mapping = currentBuild(); status("All palettes set to the current build's mapping."); }
+  else {
+    for (const cls of CLASSES) mapping[pr.pal][cls] = pr.pens.map(c => Array.isArray(c) ? c.slice() : c);
+    curPal = pr.pal; status(k + " applied to palette " + pr.pal + " (all classes).");
+  }
+  buildTabs(); buildTable(); render();
+}
+function copyTerrain(all) {
+  const m = mapping[curPal];
+  for (const cls of CLASSES) if (cls !== "terrain" && (all || cls === "characters"))
+    m[cls] = m.terrain.map(c => Array.isArray(c) ? c.slice() : c);
+  buildTable(); render();
+}
+
+// ---------------- preview ----------------
+function buildScenePicker() {
+  const s = el("scene"); s.innerHTML = "";
+  scenes.forEach((sc, i) => { const o = document.createElement("option"); o.value = i;
+    o.textContent = sc.meta.title + "  [pal " + sc.meta.palette + "]"; s.appendChild(o); });
+  const p = el("previewPal"); p.innerHTML = '<option value="scene">scene\'s own</option>';
+  for (const pl of PALS) { const o = document.createElement("option"); o.value = pl.id; o.textContent = pl.id + " " + pl.name; p.appendChild(o); }
+}
+const TINT = [null, [255, 0, 255], [255, 220, 0], [0, 140, 255]];     // by data class: chars, lamp, panel
+function render() {
+  if (!scenes.length) return;
+  const sc = scenes[+el("scene").value || 0];
+  const pv = el("previewPal").value;
+  const pal = pv === "scene" ? sc.meta.palette : +pv;
+  const game = el("gameToday").checked, overlay = el("overlay").checked;
+  const m = mapping[pal];
+  const byClass = [m.terrain, m.characters, m.lamp, m.panel];          // indexed by the data's class number
+  // the game's rules (tools/colourmodel.py): palettes 0/1 terrain everywhere, the lamp as terrain
+  const gameClass = pal <= 1 ? [m.terrain, m.terrain, m.terrain, m.terrain] : [m.terrain, m.characters, m.terrain, m.panel];
+  const ctx = el("ql").getContext("2d"), img = ctx.createImageData(256, 256);
+  const cctx = el("cpc").getContext("2d"), cimg = cctx.createImageData(256, 256);
+  const cpcRgb = PALS[pal].cpc_inks.map(hwRgb);
+  for (let i = 0; i < 256 * 256 * 4; i += 4) { img.data[i+3] = 255; cimg.data[i+3] = 255; }
+  for (let y = 0; y < 200; y++) {
+    const qy = y < 160 ? LAY.play_y + y : LAY.panel_y + (y - 160);
+    for (let x = 0; x < 256; x++) {
+      const v = sc.px[y * 256 + x], pen = v & 3, cls = v >> 2;
+      let c = (game ? gameClass : byClass)[cls][pen];
+      if (Array.isArray(c)) c = c[(x + qy) & 1];
+      let rgb = QL[c];
+      if (overlay && TINT[cls]) rgb = rgb.map((ch, k) => (ch * 0.45 + TINT[cls][k] * 0.55) | 0);
+      const o = (qy * 256 + x) * 4;
+      img.data[o] = rgb[0]; img.data[o+1] = rgb[1]; img.data[o+2] = rgb[2];
+      const cr = cpcRgb[pen];
+      cimg.data[o] = cr[0]; cimg.data[o+1] = cr[1]; cimg.data[o+2] = cr[2];
+    }
+  }
+  ctx.putImageData(img, 0, 0); cctx.putImageData(cimg, 0, 0);
+  el("cpcbox").style.display = el("showCpc").checked ? "" : "none";
+  el("qlcap").textContent = "QL preview, palette " + pal + " (" + PALS[pal].name + ")" +
+    (game ? ": GAME (what the build draws)" : ": the mapping as set (every row)") +
+    ". 256×256, play area from line " + LAY.play_y + ", panel from line " + LAY.panel_y + " (layout A), shown 2×.";
+  el("scenesrc").textContent = "Scene: " + sc.meta.title + " — room " + sc.meta.room + ", native palette " +
+    sc.meta.palette + ". Source: " + sc.meta.source + "." + (sc.meta.id === "dark_library_lamp" ? " " + SC.note_lamp : "");
+}
+
+// ---------------- export / import / save ----------------
+function exportObj() {
+  const pals = {};
+  for (const p of PALS) pals[p.id] = mapping[p.id];
+  return { version: 1, about: "QL colours for each CPC palette and pixel source, made with tools/colour_mapper.html; " +
+           "tools/mkpalette.py turns it into src/palette_data.s (terrain, characters, panel, dithers; the lamp uses terrain pen 3).",
+           palettes: pals };
+}
+function exportJson() {
+  const blob = new Blob([JSON.stringify(exportObj(), null, 2) + "\n"], { type: "application/json" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "colour_mapping.json"; a.click();
+  status("Downloaded colour_mapping.json: put it in data/ in the repo and rebuild.");
+}
+function importJson(file) {
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const o = JSON.parse(r.result);
+      for (const p of PALS) {
+        const e = o.palettes[String(p.id)];
+        if (!e) continue;
+        for (const cls of CLASSES) if (e[cls]) mapping[p.id][cls] = e[cls];
+          else if (e.terrain) mapping[p.id][cls] = e.terrain.slice();
+      }
+      buildTable(); render(); status("Imported " + file.name + ".");
+    } catch (err) { status("Import failed: " + err, true); }
+  };
+  r.readAsText(file);
+}
+async function saveRepo() {
+  if (location.protocol === "file:") { status("Save to repo needs the page opened through python tools/colour_server.py; use Export JSON instead.", true); return; }
+  try {
+    const res = await fetch("/api/colour_mapping", { method: "POST", headers: { "Content-Type": "application/json" },
+                                                     body: JSON.stringify(exportObj()) });
+    const j = await res.json();
+    status(j.ok ? "Saved data/colour_mapping.json (old one backed up to " + j.backup + "). Rebuild to use it." : "Save failed: " + j.error, !j.ok);
+  } catch (err) { status("Save failed: " + err, true); }
+}
+
+// ---------------- start ----------------
+(async function () {
+  buildPresets(); buildTabs(); buildTable();
+  el("applyPreset").onclick = applyPreset;
+  el("copyChar").onclick = () => copyTerrain(false);
+  el("copyAll").onclick = () => copyTerrain(true);
+  el("export").onclick = exportJson;
+  el("import").onchange = e => e.target.files[0] && importJson(e.target.files[0]);
+  el("save").onclick = saveRepo;
+  for (const id of ["scene", "previewPal", "gameToday", "overlay", "showCpc"]) el(id).onchange = render;
+  el("legend").innerHTML = "<span>Sources: terrain (untinted)</span><span style='color:#f6f'>characters</span>" +
+    "<span style='color:#fd0'>lamp</span><span style='color:#3af'>panel</span>";
+  try { await loadScenes(); } catch (err) { status("Could not read the scenes (" + err + "): use a current Chrome, Edge or Firefox.", true); return; }
+  buildScenePicker();
+  // optional start state from the URL hash, e.g. #scene=8&pal=3&preset=D4%20dither%20orange&overlay=1&game=1
+  const hp = new URLSearchParams(location.hash.slice(1));
+  if (hp.get("preset") && PRESETS.hasOwnProperty(hp.get("preset"))) { el("preset").value = hp.get("preset"); applyPreset(); }
+  if (hp.get("scene")) el("scene").value = hp.get("scene");
+  if (hp.get("pal")) el("previewPal").value = hp.get("pal");
+  if (hp.get("overlay")) el("overlay").checked = true;
+  if (hp.get("game")) el("gameToday").checked = true;
+  render();
+  status(scenes.length + " scenes loaded. Mapping = the current build" + (hp.get("preset") ? " + " + hp.get("preset") : "") + ".");
+})();
+</script>
+</body>
+</html>

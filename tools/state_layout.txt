@@ -1,0 +1,21 @@
+Harness state block (256 bytes), filled by abadia_state() in cpp/port/ql_game.cpp after
+every logic step. In the QL image it lives at header +32 (see src/qlstart.s); the oracle
+writes the same block per step to its state file. Multi-byte values are big-endian.
+
+  +0   'ABBY'
+  +4   logic step counter (long)
+  +8   dia            +9  momentoDia     +10 obsequium
+  +11  flags: 1 haFracasado, 2 investigacionCompleta, 4 espejoCerrado, 8 usandoLampara,
+               16 lamparaDesaparecida, 32 mostrandoFrase
+  +12  duracionMomentoDia (word)          +14 bonus (word)
+  +16  numPantalla    +17 oriCamara      +18 numPersonajeCamara   +19 mascaraPuertas
+  +20  8 characters x 8: posX posY altura orientacion estado contadorAnimacion objetos
+       flags(1 bajando, 2 enDesnivel, 4 giradoEnDesnivel, 8 flipX)
+       order: guillermo adso malaquias abad berengario severino jorge bernardo
+  +84  7 doors x 4: orientacion abierta posX posY
+  +112 8 objects x 4: posX posY altura holder (character index, $FF = nobody, $FE = free)
+  +144 24 sprites x 4: visible posXPant posYPant profundidad
+  +240 unused
+
+QL header (image +0): bra.w, 'ABQL', build id, fault word (+12), tick counter (+16),
+50 Hz frame counter (+20), heap high-water mark (+24).

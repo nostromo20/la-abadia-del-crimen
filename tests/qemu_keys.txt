@@ -1,0 +1,6 @@
+# run with QEMU_KEYS=1 (Q-emuLator: keys only as typed characters): turn left (held 3 steps), walk 40 steps, turn right, walk
+5 7 LEFT
+10 50 UP
+55 55 RIGHT
+60 100 UP
+120 120 ESC

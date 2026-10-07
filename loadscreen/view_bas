@@ -1,0 +1,14 @@
+100 REMark Abadia loading-screen candidates: any key = next
+110 dev$="win1_"
+120 MODE 8: LBYTES dev$&"A1_scr",131072: k$=INKEY$(-1)
+130 MODE 8: LBYTES dev$&"A2_scr",131072: k$=INKEY$(-1)
+140 MODE 8: LBYTES dev$&"A3_scr",131072: k$=INKEY$(-1)
+150 MODE 8: LBYTES dev$&"A4_scr",131072: k$=INKEY$(-1)
+160 MODE 8: LBYTES dev$&"A5_scr",131072: k$=INKEY$(-1)
+170 MODE 8: LBYTES dev$&"A6_scr",131072: k$=INKEY$(-1)
+180 MODE 8: LBYTES dev$&"B1_scr",131072: k$=INKEY$(-1)
+190 MODE 8: LBYTES dev$&"C1_scr",131072: k$=INKEY$(-1)
+200 MODE 8: LBYTES dev$&"C2_scr",131072: k$=INKEY$(-1)
+210 MODE 8: LBYTES dev$&"D1_scr",131072: k$=INKEY$(-1)
+220 MODE 4: LBYTES dev$&"M4_scr",131072: k$=INKEY$(-1)
+230 MODE 4

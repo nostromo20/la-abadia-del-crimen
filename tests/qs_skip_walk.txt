@@ -1,0 +1,6 @@
+# skip during a page turn, then walk
+481 481 SPACE
+500 520 LEFT
+521 900 UP
+1000 1003 RIGHT
+1004 1500 UP

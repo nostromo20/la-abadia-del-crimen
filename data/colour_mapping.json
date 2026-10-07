@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "about": "QL colours for each CPC palette and pixel source, made with tools/colour_mapper.html; tools/mkpalette.py turns it into src/palette_data.s. The game uses the terrain mapping for everything for now.",
+  "palettes": {
+    "0": {
+      "terrain": [
+        "black",
+        "black",
+        "black",
+        "black"
+      ],
+      "characters": [
+        "black",
+        "black",
+        "black",
+        "black"
+      ],
+      "panel": [
+        "black",
+        "black",
+        "black",
+        "black"
+      ],
+      "lamp": [
+        "black",
+        "black",
+        "black",
+        "black"
+      ]
+    },
+    "1": {
+      "terrain": [
+        [
+          "yellow",
+          "white"
+        ],
+        "cyan",
+        "black",
+        "red"
+      ],
+      "characters": [
+        "white",
+        "magenta",
+        "black",
+        "red"
+      ],
+      "panel": [
+        "white",
+        "magenta",
+        "black",
+        "red"
+      ],
+      "lamp": [
+        "white",
+        "magenta",
+        "black",
+        "red"
+      ]
+    },
+    "2": {
+      "terrain": [
+        "cyan",
+        "yellow",
+        "white",
+        "black"
+      ],
+      "characters": [
+        "white",
+        "red",
+        "yellow",
+        "black"
+      ],
+      "panel": [
+        "white",
+        "yellow",
+        "red",
+        "black"
+      ],
+      "lamp": [
+        "cyan",
+        "yellow",
+        "red",
+        "black"
+      ]
+    },
+    "3": {
+      "terrain": [
+        "blue",
+        "magenta",
+        "white",
+        "black"
+      ],
+      "characters": [
+        "blue",
+        "cyan",
+        "white",
+        "black"
+      ],
+      "panel": [
+        "blue",
+        "magenta",
+        "white",
+        "black"
+      ],
+      "lamp": [
+        "blue",
+        "magenta",
+        "white",
+        "black"
+      ]
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+ "name": "let",
+ "source": "let.json",
+ "tick_hz": 22917,
+ "beeper_range_hz": [43.3, 1081.0],
+ "beeps": [
+  {
+   "t_ms": 0.0,
+   "frame": 0,
+   "params": [2, 17, 442, 6876, 1, 0, 0, 0],
+   "octave_shift": -2,
+   "dos_hz": [1711.88, 3964.06],
+   "target_hz": [991.01, 427.97],
+   "ql_hz": [987.8, 430.77],
+   "fit": "sweep 2 -> 17 (15 steps every 442 ticks = 19.3 ms)",
+   "ipc_bytes": [2, 17, 186, 1, 220, 26, 16, 0]
+  }
+ ],
+ "octave_shift": -2
+}

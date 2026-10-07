@@ -1,0 +1,160 @@
+{
+ "engine": "ABADIA1.OVL 0x553/0x57a, tick 299.9452 Hz",
+ "sounds": [
+  {
+   "name": "music_parchment",
+   "script": "DS:C1A8",
+   "file_offset": "0x141A8",
+   "trigger": "0x6d7 (unconditional 0x553) from 0x1f0c (intro parchment, text DS:C966 'Ya al final de mi vida...') and 0x3436 (ending parchment, text DS:CF67 'Desfigurado por la angustia...')",
+   "event": "parchment music: SAME tune for intro and ending; loops (JUMP C1A8) until replaced",
+   "cpc_equivalent": "CPC music START (intro) and END (ending) -- the CPC has two different tunes",
+   "mapping_confidence": "high",
+   "loops": true,
+   "pass_ms": 74680.3
+  },
+  {
+   "name": "music_background",
+   "script": "DS:C45F",
+   "file_offset": "0x1445F",
+   "trigger": "0x1f97 at game start (0x553), and 0x608a every main-loop pass when no phrase is on the scroll ([B85E]==0) via 0x6367 -> 0x543 (start only if the engine is idle)",
+   "event": "in-game background tune; loops forever (JUMP C45F); any effect cuts it and it restarts from the top",
+   "cpc_equivalent": "CPC 0x1007 'inicia un sonido en el canal 1' (CPC 41AB, same routine)",
+   "mapping_confidence": "high (site); tune itself has no CPC twin checked",
+   "loops": true,
+   "pass_ms": 27311.7
+  },
+  {
+   "name": "open_door",
+   "script": "DS:C176",
+   "file_offset": "0x14176",
+   "trigger": "0x1257: door bit 6 set (opening) -> 0x6370",
+   "event": "door opens (closing calls stub 0x636f = silent)",
+   "cpc_equivalent": "CPC 0x101B OPEN (CPC 0DA6 call nz)",
+   "mapping_confidence": "high",
+   "loops": false,
+   "pass_ms": 400.1
+  },
+  {
+   "name": "steps",
+   "script": "DS:C180",
+   "file_offset": "0x14180",
+   "trigger": "0x2044: [BAF4] bit 0 set -> 0x6361",
+   "event": "Guillermo's footstep",
+   "cpc_equivalent": "CPC 0x1002 STEPS (CPC 2620 call nz)",
+   "mapping_confidence": "high",
+   "loops": false,
+   "pass_ms": 40.0
+  },
+  {
+   "name": "get",
+   "script": "DS:C18A",
+   "file_offset": "0x1418A",
+   "trigger": "0x53e5: object mask changed and new bit set -> 0x637c",
+   "event": "object picked up",
+   "cpc_equivalent": "CPC 0x1025 GET (CPC 5090 call nz)",
+   "mapping_confidence": "high",
+   "loops": false,
+   "pass_ms": 300.1
+  },
+  {
+   "name": "let",
+   "script": "DS:C194",
+   "file_offset": "0x14194",
+   "trigger": "0x53de: object mask changed, bit cleared -> 0x6383",
+   "event": "object dropped",
+   "cpc_equivalent": "CPC 0x102F LET (CPC 508C call z)",
+   "mapping_confidence": "high",
+   "loops": false,
+   "pass_ms": 300.1
+  },
+  {
+   "name": "speech",
+   "script": "DS:C19E",
+   "file_offset": "0x1419E",
+   "trigger": "0x53a2 (phrase put on the scroll) and 0x2cc5 (20x with a delay when the demo's key buffer runs out)",
+   "event": "phrase blip / end-of-demo beeps",
+   "cpc_equivalent": "CPC 0x1020 'canal 3' (CPC 3B73 per phrase character, 320B demo end x20)",
+   "mapping_confidence": "high",
+   "loops": false,
+   "pass_ms": 200.0
+  }
+ ],
+ "silent_on_dos": [
+  {
+   "sound": "CLOSE (CPC 0x1016)",
+   "where": "0x125e -> stub 0x636f = ret"
+  },
+  {
+   "sound": "BELLS (CPC 0x100C)",
+   "where": "0x4ad3/0x4b2e/0x4b60 -> stub 0x636d = ret"
+  },
+  {
+   "sound": "JINGLE / campanas (CPC 0x1011)",
+   "where": "0x4b2a/0x4b5c/0x4b70 -> stub 0x636e = ret"
+  },
+  {
+   "sound": "HIT, Severino knocking (CPC 0x102A)",
+   "where": "0x502f -> stub 0x6382 = ret"
+  },
+  {
+   "sound": "MIRROR (CPC 0x0FFD)",
+   "where": "0x2e37 -> stub 0x6360 = ret"
+  },
+  {
+   "sound": "C175 = bare END",
+   "where": "0x1f20/0x1faf via 0x63a3 -> 0x543: silences the speaker if idle"
+  }
+ ],
+ "cpc_derived": [
+  {
+   "name": "close",
+   "cpc_entry": "0x1016",
+   "vigasoco": "CLOSE",
+   "event": "door closes (CPC 0DAA call z,1016)",
+   "beeps": 1,
+   "cpc_length_ms": 500.0,
+   "ql_length_ms": 400.0,
+   "fit": "1 strike, one BEEP each, fuzz 13 for the AY noise"
+  },
+  {
+   "name": "bells",
+   "cpc_entry": "0x100C",
+   "vigasoco": "BELLS",
+   "event": "canonical hours prima/sexta/visperas (CPC 5F48, 5F93, 5FB9)",
+   "beeps": 10,
+   "cpc_length_ms": 8780.0,
+   "ql_length_ms": 8520.0,
+   "fit": "10 strikes, one BEEP each, shifted -1 octave"
+  },
+  {
+   "name": "jingle",
+   "cpc_entry": "0x1011",
+   "vigasoco": "JINGLE",
+   "event": "tercia/completas (CPC 5F8F, 5FB5, 5FC7; the CPC comment calls it 'campanas')",
+   "beeps": 1,
+   "cpc_length_ms": 980.0,
+   "ql_length_ms": 980.0,
+   "fit": "dyad 1995 + 2930 Hz folded to p2/p6 (988/735 Hz), continuous bounce, one up-down cycle per CPC re-strike (5.4 frames)"
+  },
+  {
+   "name": "hit",
+   "cpc_entry": "0x102A",
+   "vigasoco": "HIT",
+   "event": "Severino knocking at his cell door (CPC 635A)",
+   "beeps": 3,
+   "cpc_length_ms": 1420.0,
+   "ql_length_ms": 1320.0,
+   "fit": "3 strikes, one BEEP each, fuzz 13 for the AY noise"
+  },
+  {
+   "name": "mirror",
+   "cpc_entry": "0x0FFD",
+   "vigasoco": "MIRROR",
+   "event": "the mirror opens (CPC 3361)",
+   "beeps": 1,
+   "cpc_length_ms": 1580.0,
+   "ql_length_ms": 1380.0,
+   "fit": "sweep p159 -> p128 (67.8 -> 83.6 Hz, step every 833 ticks), fuzz 12 for the noise channel"
+  }
+ ]
+}
